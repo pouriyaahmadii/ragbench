@@ -16,7 +16,9 @@ class EmbeddingConfig(BaseModel):
     def config_hash(self) -> str:
         import hashlib
         import json
-        canonical = self.model_dump_json(sort_keys=True, exclude={"api_key"})
+        # Pydantic v2: use model_dump with json.dumps for sorted keys
+        data = self.model_dump(exclude={"api_key"})
+        canonical = json.dumps(data, sort_keys=True, separators=(',', ':'))
         return hashlib.sha256(canonical.encode()).hexdigest()[:16]
 
 
@@ -35,7 +37,9 @@ class GenerationConfig(BaseModel):
     def config_hash(self) -> str:
         import hashlib
         import json
-        canonical = self.model_dump_json(sort_keys=True, exclude={"api_key"})
+        # Pydantic v2: use model_dump with json.dumps for sorted keys
+        data = self.model_dump(exclude={"api_key"})
+        canonical = json.dumps(data, sort_keys=True, separators=(',', ':'))
         return hashlib.sha256(canonical.encode()).hexdigest()[:16]
 
 
@@ -78,5 +82,7 @@ class JudgeConfig(BaseModel):
     def config_hash(self) -> str:
         import hashlib
         import json
-        canonical = self.model_dump_json(sort_keys=True, exclude={"api_key"})
+        # Pydantic v2: use model_dump with json.dumps for sorted keys
+        data = self.model_dump(exclude={"api_key"})
+        canonical = json.dumps(data, sort_keys=True, separators=(',', ':'))
         return hashlib.sha256(canonical.encode()).hexdigest()[:16]
