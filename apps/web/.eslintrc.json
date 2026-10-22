@@ -1,0 +1,52 @@
+{
+  "extends": [
+    "next/core-web-vitals",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react-hooks/recommended",
+    "plugin:tailwindcss/recommended",
+    "prettier"
+  ],
+  "plugins": [
+    "@typescript-eslint",
+    "react-hooks",
+    "tailwindcss",
+    "prettier"
+  ],
+  "rules": {
+    "prettier/prettier": "error",
+    "@typescript-eslint/no-unused-vars": [
+      "error",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_",
+        "caughtErrorsIgnorePattern": "^_"
+      }
+    ],
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-non-null-assertion": "warn",
+    "react-hooks/exhaustive-deps": "warn",
+    "tailwindcss/no-custom-classname": "warn",
+    "tailwindcss/enforces-shorthand": "error",
+    "tailwindcss/no-arbitrary-value": "warn"
+  },
+  "settings": {
+    "tailwindcss": {
+      "callees": ["clsx", "cn", "cva"],
+      "config": "tailwind.config.ts"
+    },
+    "react": {
+      "version": "18.3"
+    }
+  },
+  "ignorePatterns": [
+    "node_modules/",
+    ".next/",
+    "out/",
+    "dist/",
+    "build/",
+    "*.config.js",
+    "*.config.ts",
+    "playwright.config.ts",
+    "lib/api/types.ts"
+  ]
+}

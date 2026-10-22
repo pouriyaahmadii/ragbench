@@ -1,0 +1,195 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ragbench-api"
+version = "0.1.0"
+description = "RAGBench - RAG Evaluation Platform API"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [{name = "RAGBench Team"}]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "fastapi==0.110.1",
+    "uvicorn[standard]==0.29.0",
+    "pydantic==2.7.4",
+    "pydantic-settings==2.3.4",
+    "sqlalchemy==2.0.30",
+    "alembic==1.12.1",
+    "asyncpg==0.29.0",
+    "qdrant-client==1.10.1",
+    "pdfplumber==0.11.0",
+    "markdown-it-py==3.0.0",
+    "httpx==0.27.0",
+    "python-multipart==0.0.9",
+    "structlog==24.1.0",
+    "python-json-logger==2.0.7",
+    "tenacity==8.2.3",
+    "python-dotenv==1.0.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==8.2.2",
+    "pytest-asyncio==0.23.3",
+    "pytest-cov==4.1.0",
+    "pytest-mock==3.14.0",
+    "hypothesis==6.89.0",
+    "ruff==0.4.4",
+    "mypy==1.10.0",
+    "bandit==1.7.5",
+    "pip-audit==2.6.1",
+    "pre-commit==3.6.0",
+    "faker==25.2.0",
+]
+ollama = [
+    "ollama==0.2.0",
+]
+openai = [
+    "openai==1.30.1",
+]
+anthropic = [
+    "anthropic==0.25.0",
+]
+cohere = [
+    "cohere==4.4.1",
+]
+celery = [
+    "celery==5.3.4",
+    "redis==5.0.1",
+]
+ragas = [
+    "ragas==0.2.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["app*"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+    "PTH", # flake8-use-pathlib
+    "T20", # flake8-print
+    "ARG", # flake8-unused-arguments
+    "ERA", # flake8-eradicate
+    "PL",  # pylint
+    "SIM", # flake8-simplify
+    "TD",  # flake8-todo
+]
+ignore = [
+    "E501",  # line too long (handled by formatter)
+    "B008",  # function calls in default arguments
+    "C901",  # too complex (allow for now)
+    "T201",  # print statement (allow in scripts)
+    "S101",  # assert (allow in tests)
+]
+per-file-ignores = {
+    "tests/*": ["S101", "T201"],
+    "scripts/*": ["T201"],
+    "alembic/*": ["E501"],
+}
+format = "black"
+indent-style = "space"
+indent-width = 4
+
+[tool.ruff.format]
+quote-style = "double"
+skip-magic-trailing-comma = false
+line-ending = "lf"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+show_error_codes = true
+pretty = true
+namespace_packages = true
+explicit_package_bases = true
+mypy_path = "."
+
+[[tool.mypy.overrides]]
+module = [
+    "tests.*",
+    "alembic.*",
+]
+strict = false
+disallow_untyped_defs = false
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --tb=short --strict-markers --strict-config"
+markers = [
+    "unit: Unit tests (no external dependencies)",
+    "integration: Integration tests (requires PostgreSQL + Qdrant)",
+    "contract: Contract tests (provider interfaces)",
+    "security: Security regression tests",
+    "slow: Slow running tests",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+]
+
+[tool.coverage.run]
+source = ["app"]
+omit = [
+    "tests/*",
+    "alembic/*",
+    "*/migrations/*",
+    "*/__pycache__/*",
+]
+branch = true
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
+fail_under = 80
+
+[tool.bandit]
+exclude_dirs = ["tests", "scripts", "alembic"]
+skips = ["B101", "B601"]
+
+[tool.pip-audit]
+desc = "on"
+format = "json"
+output = "pip-audit-report.json"
+
+[tool.hypothesis]
+phases = ["explicit", "reuse", "generate", "shrink", "target"]
+max_examples = 100
+deadline = 5000

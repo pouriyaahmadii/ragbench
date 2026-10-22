@@ -3,6 +3,7 @@
 # All commands should be run from repository root
 
 .PHONY: help up down down-v restart logs logs-api logs-web logs-db logs-qdrant \
+        infra-up api-up web-up \
         migrate migrate-create shell-db shell-qdrant shell-api shell-web \
         test test-unit test-integration test-contract test-e2e test-all \
         lint format typecheck \
@@ -78,6 +79,15 @@ help:
 # =============================================================================
 # Infrastructure
 # =============================================================================
+
+infra-up:
+	docker compose up -d postgres qdrant redis
+
+api-up:
+	docker compose up -d api
+
+web-up:
+	docker compose up -d web
 
 up:
 	docker compose up --wait

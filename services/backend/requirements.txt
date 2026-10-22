@@ -1,0 +1,18 @@
+# Production dependencies - pinned versions
+# Generated from pyproject.toml
+fastapi==0.110.1
+uvicorn[standard]==0.29.0
+pydantic==2.7.4
+pydantic-settings==2.3.4
+sqlalchemy==2.0.30
+alembic==1.12.1
+asyncpg==0.29.0
+qdrant-client==1.10.1
+pdfplumber==0.11.0
+markdown-it-py==3.0.0
+httpx==0.27.0
+python-multipart==0.0.9
+structlog==24.1.0
+python-json-logger==2.0.7
+tenacity==8.2.3
+python-dotenv==1.0.1

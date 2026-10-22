@@ -1,0 +1,14 @@
+# Development dependencies - pinned versions
+# Generated from pyproject.toml [project.optional-dependencies.dev]
+-r requirements.txt
+pytest==8.2.2
+pytest-asyncio==0.23.3
+pytest-cov==4.1.0
+pytest-mock==3.14.0
+hypothesis==6.89.0
+ruff==0.4.4
+mypy==1.10.0
+bandit==1.7.5
+pip-audit==2.6.1
+pre-commit==3.6.0
+faker==25.2.0
