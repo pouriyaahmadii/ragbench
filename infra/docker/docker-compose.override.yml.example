@@ -1,0 +1,44 @@
+# Docker Compose Override Example
+# Copy to docker-compose.override.yml and customize for local development
+# This file is gitignored (see .gitignore)
+
+# Example: Expose ports on all interfaces (not just loopback)
+# services:
+#   api:
+#     ports:
+#       - "8000:8000"
+#   web:
+#     ports:
+#       - "3000:3000"
+
+# Example: Debug logging
+# services:
+#   api:
+#     environment:
+#       - LOG_LEVEL=DEBUG
+#       - LOG_FORMAT=console
+
+# Example: Resource limits for constrained environments
+# services:
+#   postgres:
+#     deploy:
+#       resources:
+#         limits:
+#           memory: 256M
+#   qdrant:
+#     deploy:
+#       resources:
+#         limits:
+#           memory: 512M
+
+# Example: Additional volumes for local development
+# services:
+#   api:
+#     volumes:
+#       - ./services/backend:/app
+#       - ./data/samples:/data/samples:ro
+#   web:
+#     volumes:
+#       - ./apps/web:/app
+#       - /app/node_modules
+#       - /app/.next
