@@ -1,0 +1,234 @@
+# RAGBench - Docker Compose Configuration
+# Local development stack with PostgreSQL, Qdrant, API, and Web
+# All developer-facing ports bound to loopback (127.0.0.1) by default
+
+services:
+  # =============================================================================
+  # PostgreSQL - Metadata Database
+  # =============================================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: ragbench-postgres
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-ragbench}
+      POSTGRES_USER: ${POSTGRES_USER:-ragbench}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-changeme}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-ragbench} -d ${POSTGRES_DB:-ragbench}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - ragbench-internal
+    # No ports published - internal only
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 128M
+
+  # =============================================================================
+  # Qdrant - Vector Database
+  # =============================================================================
+  qdrant:
+    image: qdrant/qdrant:1.10.1
+    container_name: ragbench-qdrant
+    volumes:
+      - qdrant_data:/qdrant/storage
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:6333/healthz"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - ragbench-internal
+    # No ports published - internal only
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 256M
+
+  # =============================================================================
+  # Redis - Optional (for Celery if ADR-005 approves)
+  # =============================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: ragbench-redis
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 5s
+    networks:
+      - ragbench-internal
+    # No ports published - internal only
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+        reservations:
+          memory: 64M
+    profiles:
+      - with-workers  # Only start when explicitly requested
+
+  # =============================================================================
+  # API Service - FastAPI Backend
+  # =============================================================================
+  api:
+    build:
+      context: ./services/backend
+      dockerfile: Dockerfile
+      target: development
+    container_name: ragbench-api
+    environment:
+      - APP_ENV=development
+      - LOG_LEVEL=INFO
+      - LOG_FORMAT=json
+      - MOCK_MODE=${MOCK_MODE:-true}
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-ragbench}:${POSTGRES_PASSWORD:-changeme}@postgres:5432/${POSTGRES_DB:-ragbench}
+      - QDRANT_URL=http://qdrant:6333
+      - QDRANT_API_KEY=${QDRANT_API_KEY}
+      - REDIS_URL=redis://redis:6379/0
+      - EMBEDDING_PROVIDER=${EMBEDDING_PROVIDER:-mock}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-mock}
+      - EMBEDDING_DIMENSION=${EMBEDDING_DIMENSION:-384}
+      - GENERATION_PROVIDER=${GENERATION_PROVIDER:-mock}
+      - GENERATION_MODEL=${GENERATION_MODEL:-mock}
+      - MAX_UPLOAD_SIZE_MB=${MAX_UPLOAD_SIZE_MB:-20}
+      - MAX_PDF_PAGES=${MAX_PDF_PAGES:-200}
+      - CHUNK_SIZE_CHARS=${CHUNK_SIZE_CHARS:-1200}
+      - CHUNK_OVERLAP_CHARS=${CHUNK_OVERLAP_CHARS:-150}
+      - DEFAULT_TOP_K=${DEFAULT_TOP_K:-5}
+      - MAX_TOP_K=${MAX_TOP_K:-20}
+      - MAX_CONTEXT_CHARS=${MAX_CONTEXT_CHARS:-4000}
+      - OLLAMA_EMBEDDING_URL=${OLLAMA_EMBEDDING_URL}
+      - OLLAMA_GENERATION_URL=${OLLAMA_GENERATION_URL}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    volumes:
+      - ./services/backend:/app
+      - /app/__pycache__
+    ports:
+      - "127.0.0.1:8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+    networks:
+      - ragbench-internal
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 256M
+
+  # =============================================================================
+  # Web Service - Next.js Frontend
+  # =============================================================================
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile
+      target: development
+    container_name: ragbench-web
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_API_URL=http://127.0.0.1:8000
+    volumes:
+      - ./apps/web:/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      api:
+        condition: service_started
+    networks:
+      - ragbench-internal
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 256M
+
+  # =============================================================================
+  # Worker - Optional Background Jobs (Celery)
+  # =============================================================================
+  worker:
+    build:
+      context: ./services/backend
+      dockerfile: Dockerfile
+      target: development
+    container_name: ragbench-worker
+    command: celery -A app.workers worker -l info --concurrency=2
+    environment:
+      - APP_ENV=development
+      - LOG_LEVEL=INFO
+      - LOG_FORMAT=json
+      - MOCK_MODE=${MOCK_MODE:-true}
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER:-ragbench}:${POSTGRES_PASSWORD:-changeme}@postgres:5432/${POSTGRES_DB:-ragbench}
+      - QDRANT_URL=http://qdrant:6333
+      - QDRANT_API_KEY=${QDRANT_API_KEY}
+      - REDIS_URL=redis://redis:6379/0
+      - EMBEDDING_PROVIDER=${EMBEDDING_PROVIDER:-mock}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-mock}
+      - EMBEDDING_DIMENSION=${EMBEDDING_DIMENSION:-384}
+      - GENERATION_PROVIDER=${GENERATION_PROVIDER:-mock}
+      - GENERATION_MODEL=${GENERATION_MODEL:-mock}
+      - OLLAMA_EMBEDDING_URL=${OLLAMA_EMBEDDING_URL}
+      - OLLAMA_GENERATION_URL=${OLLAMA_GENERATION_URL}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY}
+    volumes:
+      - ./services/backend:/app
+      - /app/__pycache__
+    depends_on:
+      postgres:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - ragbench-internal
+    profiles:
+      - with-workers
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 256M
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  ragbench-internal:
+    driver: bridge
+    name: ragbench-internal
+
+# =============================================================================
+# Volumes
+# =============================================================================
+volumes:
+  postgres_data:
+    name: ragbench-postgres-data
+  qdrant_data:
+    name: ragbench-qdrant-data
+  redis_data:
+    name: ragbench-redis-data

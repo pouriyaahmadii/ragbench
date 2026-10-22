@@ -1,0 +1,50 @@
+{
+  "dataset_id": "ragbench-demo",
+  "dataset_version": "1.0.0",
+  "description": "Small synthetic dataset schema example for RAGBench. Replace or extend with reviewed cases before publishing benchmark claims.",
+  "provenance": "Synthetic fixture data authored for local development and testing.",
+  "samples": [
+    {
+      "sample_id": "sample-001",
+      "question": "What is the stated retention period?",
+      "corpus_id": "demo-corpus-v1",
+      "relevant_document_ids": ["doc-policy-001"],
+      "relevant_chunk_ids": ["chunk-policy-001-003"],
+      "relevance_grades": {"chunk-policy-001-003": 3},
+      "reference_answer": "The stated retention period is 30 days.",
+      "expected_citation_ids": ["chunk-policy-001-003"],
+      "answerable": true,
+      "tags": ["policy", "direct-fact"],
+      "provenance": "Synthetic fixture document authored for tests."
+    },
+    {
+      "sample_id": "sample-002",
+      "question": "Which city hosts the company's second office?",
+      "corpus_id": "demo-corpus-v1",
+      "relevant_document_ids": [],
+      "relevant_chunk_ids": [],
+      "relevance_grades": {},
+      "reference_answer": null,
+      "expected_citation_ids": [],
+      "answerable": false,
+      "tags": ["abstention", "not-in-corpus"],
+      "provenance": "Synthetic unanswerable test case."
+    },
+    {
+      "sample_id": "sample-003",
+      "question": "According to the access policy, who may approve an exception?",
+      "corpus_id": "demo-corpus-v1",
+      "relevant_document_ids": ["doc-access-001"],
+      "relevant_chunk_ids": ["chunk-access-001-002", "chunk-access-001-004"],
+      "relevance_grades": {
+        "chunk-access-001-002": 3,
+        "chunk-access-001-004": 2
+      },
+      "reference_answer": "The exception must be approved by an authorized policy owner.",
+      "expected_citation_ids": ["chunk-access-001-002"],
+      "answerable": true,
+      "tags": ["policy", "multi-evidence"],
+      "provenance": "Synthetic fixture document authored for tests."
+    }
+  ]
+}
