@@ -1,24 +1,25 @@
-# Data Directory
+# Data — Sample Documents and Expected Outputs
 
-This directory contains sample documents and expected outputs for testing and demonstration.
+This directory contains fixture documents for testing and demonstration, plus expected outputs for validation.
 
 ## Structure
 
 ```
 data/
-├── samples/          # Fixture documents for ingestion testing
-│   ├── policy.pdf    # Synthetic policy document
-│   ├── access.txt    # Synthetic access control document
-│   └── guide.md      # Synthetic Markdown guide
-├── expected/         # Expected outputs for testing
-│   ├── policy_chunks.json
-│   └── access_chunks.json
-└── README.md         # This file
+├── samples/                  # Fixture documents (openly licensed / synthetic)
+│   ├── policy.pdf            # Synthetic retention policy document
+│   ├── access.txt            # Synthetic access control rules
+│   └── guide.md              # Synthetic technical guide with headings
+├── expected/                 # Expected outputs for test validation
+│   ├── policy_chunks.json    # Expected chunking output for policy.pdf
+│   ├── access_chunks.json    # Expected chunking output for access.txt
+│   └── guide_chunks.json     # Expected chunking output for guide.md
+└── README.md                 # This file
 ```
 
 ## Fixture Documents
 
-All fixture documents are **synthetic** or **openly licensed** (CC0, MIT, or created for RAGBench). No private, proprietary, or copyrighted documents are committed.
+All fixture documents are **synthetic** (authored for RAGBench) or **openly licensed** (CC0, MIT, etc.). No private, proprietary, or copyrighted documents are committed.
 
 | Document | Format | Purpose | License |
 |----------|--------|---------|---------|
@@ -26,10 +27,17 @@ All fixture documents are **synthetic** or **openly licensed** (CC0, MIT, or cre
 | `access.txt` | TXT | Access control rules | CC0 (synthetic) |
 | `guide.md` | Markdown | Technical guide with headings | CC0 (synthetic) |
 
+## Expected Outputs
+
+The `expected/` directory contains pre-computed expected outputs for unit/integration test validation:
+
+- **Chunking outputs:** Expected chunk boundaries, metadata, hashes for each fixture
+- Used by tests to verify deterministic chunking behavior
+
 ## Usage
 
 These fixtures are used by:
-- Unit tests (parsing, chunking)
+- Unit tests (parsing, chunking validation)
 - Integration tests (full ingestion pipeline)
 - E2E tests (Playwright demo flow)
 - Evaluation datasets (ground truth references)
