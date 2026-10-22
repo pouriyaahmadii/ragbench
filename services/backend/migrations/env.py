@@ -16,7 +16,7 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 
 from app.config import Settings
 from app.db.base import Base
-from app.models import document, chunk, index, dataset, experiment, answer, audit  # noqa: F401
+from app import models  # noqa: F401
 
 # Alembic Config object
 config = context.config
@@ -30,7 +30,13 @@ target_metadata = Base.metadata
 
 # Override sqlalchemy.url from environment
 settings = Settings()
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL.replace("postgresql+asyncpg", "postgresql"))
+# For local migration generation, use localhost with asyncpg
+import os
+db_url = os.environ.get("ALEMBIC_DATABASE_URL", settings.DATABASE_URL.replace("postgres", "localhost"))
+# Ensure we use asyncpg dialect
+if db_url.startswith("postgresql://"):
+    db_url = db_url.replace("postgresql://", "postgresql+asyncpg://")
+config.set_main_option("sqlalchemy.url", db_url)
 
 
 def run_migrations_offline() -> None:

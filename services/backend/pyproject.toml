@@ -101,19 +101,19 @@ ignore = [
     "T201",  # print statement (allow in scripts)
     "S101",  # assert (allow in tests)
 ]
-per-file-ignores = {
-    "tests/*": ["S101", "T201"],
-    "scripts/*": ["T201"],
-    "alembic/*": ["E501"],
-}
-format = "black"
-indent-style = "space"
-indent-width = 4
+per-file-ignores = [
+    "tests/*:S101",
+    "tests/*:T201",
+    "scripts/*:T201",
+    "alembic/*:E501",
+]
 
 [tool.ruff.format]
 quote-style = "double"
 skip-magic-trailing-comma = false
 line-ending = "lf"
+indent-style = "space"
+indent-width = 4
 
 [tool.mypy]
 python_version = "3.11"
