@@ -1,0 +1,77 @@
+# Company Data Retention Policy
+
+## Purpose
+This policy establishes the requirements for retaining and disposing of company data in compliance with legal, regulatory, and business requirements.
+
+## Scope
+This policy applies to all data created, received, or maintained by employees, contractors, and third-party service providers in the course of company business.
+
+## Retention Periods
+
+### Financial Records
+- Tax returns and supporting documents: 7 years
+- Financial statements and audit reports: Permanent
+- Accounts payable/receivable records: 7 years
+- Payroll records: 7 years
+
+### Human Resources Records
+- Employee personnel files: Duration of employment + 7 years
+- Recruitment records: 3 years
+- Training records: Duration of employment + 5 years
+- Benefits enrollment: Duration of employment + 6 years
+
+### Legal and Compliance Records
+- Contracts and agreements: Duration of contract + 7 years
+- Litigation holds: Until legal counsel authorizes destruction
+- Regulatory filings: Permanent
+- Intellectual property records: Permanent
+
+### Information Technology Records
+- System access logs: 2 years
+- Security incident reports: 5 years
+- Backup logs: 90 days
+- Network configuration: 3 years
+
+## Disposal Methods
+
+### Electronic Records
+- Secure deletion using DoD 5220.22-M standard
+- Certificate of destruction required for sensitive data
+
+### Physical Records
+- Cross-cut shredding (P-4 security level minimum)
+- Incineration for highly sensitive documents
+- Certificate of destruction required
+
+## Roles and Responsibilities
+
+### Data Owners
+- Classify data according to sensitivity
+- Define retention periods for their data domains
+- Approve disposal of records
+
+### Records Management Team
+- Maintain retention schedules
+- Execute approved disposal
+- Maintain certificates of destruction
+- Audit compliance quarterly
+
+### Employees
+- Follow retention guidelines for their work products
+- Report potential violations to Records Management
+- Do not destroy records under litigation hold
+
+## Enforcement
+Violations of this policy may result in disciplinary action up to and including termination. Legal violations will be reported to appropriate authorities.
+
+## Review and Revision
+This policy will be reviewed annually by the Records Management Team and Legal Counsel. Changes require approval from the Chief Compliance Officer.
+
+## Related Documents
+- Information Security Policy
+- Data Classification Standard
+- Litigation Hold Procedure
+- Third-Party Data Processing Agreement
+
+---
+*Document Version: 2.1 | Last Updated: 2024-01-15 | Classification: Internal*

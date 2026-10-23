@@ -58,8 +58,19 @@ def chunk_text(
         if chunk:  # Only add non-empty chunks
             chunks.append(chunk)
         
+        # If we've reached the end of the text, we're done
+        if end >= text_len:
+            break
+        
         # Move start position for next chunk
-        start = end - overlap
+        # Only advance if we're making progress
+        next_start = end - overlap
+        if next_start <= start:
+            # Not making progress, move to end to finish
+            start = text_len
+        else:
+            start = next_start
+        
         if start >= text_len:
             break
         
